@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToreDitor", "ToreDitor3\ToreDitor.csproj", "{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923} = {4D34B23A-4598-4E38-B510-4FFA3C66D923}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToreDitorCore", "ToreDitorCore3\ToreDitorCore.csproj", "{4D34B23A-4598-4E38-B510-4FFA3C66D923}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Debug|x86.ActiveCfg = Debug|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Debug|x86.Build.0 = Debug|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Release|Any CPU.ActiveCfg = Release|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Release|x86.ActiveCfg = Release|x86
+		{A6A49ADD-A4A8-4E27-BFBA-3B41E23B518A}.Release|x86.Build.0 = Release|x86
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4D34B23A-4598-4E38-B510-4FFA3C66D923}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ToreDitor3\ToreDitor.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+	EndGlobalSection
+EndGlobal
