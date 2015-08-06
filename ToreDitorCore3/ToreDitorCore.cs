@@ -100,20 +100,30 @@ namespace ToreDitorCore
             int marginLeft = 0;
             Brush br;
 
+            const float NumberWidth = 30.0f;
+
             if (this.Buffer.isEnabledNumber) {
-                marginLeft += 30;
-                g.FillRectangle(this.Buffer.Aliases["defaultNumberBack"].Brush, 0.0f, 0.0f, 30.0f, (float)this.Height);
+                marginLeft += (int)NumberWidth;
+                g.FillRectangle(this.Buffer.Aliases["defaultNumberBack"].Brush, 0.0f, 0.0f, NumberWidth, (float)this.Height);
             }
 
             foreach (var line in this.Document.Text.Select((val, i) => new { i, val }))
         	{
+
+      	        if (this.Buffer.isEnabledNumber) {
+                    var number = (line.i+1).ToString();
+
+   	                g.DrawString(
+                        number,
+                        this.Buffer.Font,
+                        this.Buffer.Aliases["defaultNumber"].Brush,
+                        NumberWidth - (float)number.Length*this.Buffer.FontSize.Width - 2.0f,
+                        (float)line.i *this.Buffer.FontSize.Height
+                    );
+   	            }
+
         	    for (int x = 0; x < line.val.Length; x++ ) //文字の描画
         	    {
-
-        	        if (this.Buffer.isEnabledNumber) {
-        	            g.DrawString((line.i+1).ToString(), this.Buffer.Font, this.Buffer.Aliases["defaultNumber"].Brush, 0.0f, (float)line.i *this.Buffer.FontSize.Height);
-        	        }
-
         	        String markName = "";
         	        this.Document.Marks.TryGetValue(count, out markName);
         	        if (markName != null) {
