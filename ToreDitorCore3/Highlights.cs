@@ -60,5 +60,9 @@ namespace ToreDitorCore
         {
             this.Add(highlight.Name, highlight);
         }
+        public void Add(string name, string pattern, string color, int level)
+        {
+            this.Add(name, new Highlight(name, pattern, new SolidBrush(ColorTranslator.FromHtml(color)), level));
+        }
     }
 }

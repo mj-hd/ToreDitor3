@@ -11,12 +11,14 @@ namespace ToreDitorCore.Runtimes
 {
     public class Javascript : IRuntime
     {
-        public Javascript()
+        public Javascript(ToreDitorCore host)
         {
+            this._host = host;
+
             this._init();
         }
 
-        public ~Javascript()
+        ~Javascript()
         {
         }
 
@@ -25,15 +27,54 @@ namespace ToreDitorCore.Runtimes
             this._init();
         }
 
+        public bool Supports(string fname)
+        {
+            var ext = Path.GetExtension(fname);
+            return (ext == ".js");
+        }
+
         public void Execute(string source)
         {
             this._context.Execute(source);
         }
 
-        public void Dispatch(IEvent e)
+        public void Dispatch(OnEvents e)
         {
-            throw new NotImplementedException();
+            var name = "";
+
+            switch (e)
+            {
+                case OnEvents.OnFinish:
+                    name = "onFinish";
+                    break;
+                case OnEvents.OnInit:
+                    name = "onInit";
+                    break;
+                case OnEvents.OnLoad:
+                    name = "onLoad";
+                    break;
+                case OnEvents.OnOpen:
+                    name = "onOpen";
+                    break;
+                case OnEvents.OnSave:
+                    name = "onSave";
+                    break;
+                default:
+                    name = "";
+                    return;
+            }
+
+            this._context.Execute($@"
+function dispatch(handlers) {{
+    for (var i = 0; i < handlers.length; i++) {{
+        handlers[i]();                
+    }}
+}};
+dispatch(Editor.{name});
+");
         }
+
+        protected ToreDitorCore _host;
 
         private CSharp.Context _context;
 
@@ -41,16 +82,10 @@ namespace ToreDitorCore.Runtimes
         {
             this._context = new CSharp.Context();
 
-            this._context.Execute(Properties.Resources.jQuery);
+            this._context.SetGlobal<FunctionObject>("print",
+                IronJS.Native.Utils.CreateFunction<Action<string>>(this._context.Environment, 1, (text) => { Console.WriteLine(text); }));
 
-            this._context.Execute(@"
-var Buffer = {};
-var Caret  = {};
-var Dispatcher = {};
-var Document = {};
-var Highlighter = {};
-var Scheme = {};
-"           );
+            this._context.Execute(Properties.Resources.JavascriptRuntimeScript);
         }
     }
 }

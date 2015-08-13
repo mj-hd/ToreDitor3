@@ -8,7 +8,8 @@ namespace ToreDitorCore
     public interface IRuntime
     {
         void Reset();
+        bool Supports(string fname);
         void Execute(string source);
-        void Dispatch(IEvent e);
+        void Dispatch(OnEvents e);
     }
 }

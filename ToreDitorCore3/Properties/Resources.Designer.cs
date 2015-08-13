@@ -61,12 +61,70 @@ namespace ToreDitorCore.Properties {
         }
         
         /// <summary>
-        ///   /*! jQuery v2.1.4 | (c) 2005, 2015 jQuery Foundation, Inc. | jquery.org/license */
-        ///!function(a,b){&quot;object&quot;==typeof module&amp;&amp;&quot;object&quot;==typeof module.exports?module.exports=a.document?b(a,!0):function(a){if(!a.document)throw new Error(&quot;jQuery requires a window with a document&quot;);return b(a)}:b(a)}(&quot;undefined&quot;!=typeof window?window:this,function(a,b){var c=[],d=c.slice,e=c.concat,f=c.push,g=c.indexOf,h={},i=h.toString,j=h.hasOwnProperty,k={},l=a.document,m=&quot;2.1.4&quot;,n=function(a,b){return new n.fn.init(a,b)},o=/^ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///   var Editor = {
+        ///    Buffer : {
+        ///        Caret: {},
+        ///        Highlights: {}
+        ///    },
+        ///    Dispatcher : {
+        ///        Dispatch: function(e) {
+        ///            var funcs = eval(&quot;Editor.&quot;+e)
+        ///            for (var i = 0; i &lt; funcs.length; i++) {
+        ///                funcs[i]();
+        ///            }
+        ///        }
+        ///    },
+        ///    Document   : {},
+        ///    Scheme     : {},
+        ///    OnInit     : [],
+        ///    OnFinish   : [],
+        ///    OnLoad     : [],
+        ///    OnOpen     : [],
+        ///    OnSave     : []
+        ///};
+        ///
+        ///Editor.Buffer.Highlights = {
+        ///    Add: function (highlig [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
-        internal static string jQuery {
+        internal static string JavascriptRuntimeScript {
             get {
-                return ResourceManager.GetString("jQuery", resourceCulture);
+                return ResourceManager.GetString("JavascriptRuntimeScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   class EventHandlerArray &lt; Array
+        ///  def add_handler(code=nil, &amp;block)
+        ///    if(code)
+        ///      push(code)
+        ///    else
+        ///      push(block)
+        ///    end
+        ///  end
+        ///  def add
+        ///    raise &quot;error&quot;
+        ///  end
+        ///  def remove_handler(code)
+        ///    delete(code)
+        ///  end
+        ///  def trigger(e)
+        ///    reverse_each { | handler | handler.call(e) }
+        ///  end
+        ///end
+        ///
+        ///def events(*symbols)
+        ///  modName = name+&quot;Events&quot;
+        ///  initStr = Array.new
+        ///  readerStr = Array.new
+        ///  methodsStr = Array.new
+        ///  symbols.each { | sym |
+        ///    name = sym.to_s
+        ///    initStr &lt;&lt; %Q{
+        ///    [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string RubyRuntimeScript {
+            get {
+                return ResourceManager.GetString("RubyRuntimeScript", resourceCulture);
             }
         }
     }

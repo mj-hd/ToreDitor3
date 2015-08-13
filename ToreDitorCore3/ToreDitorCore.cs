@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ToreDitorCore
@@ -17,14 +16,24 @@ namespace ToreDitorCore
             : this(SystemFonts.DefaultFont)
         {}
         public ToreDitorCore(Font font)
+            : this(SystemFonts.DefaultFont, "Plugins\\")
+        {}
+        public ToreDitorCore(Font font, string runtime)
         {
             InitializeComponent();
 
             this.Buffer   = new Buffer(font);
             this.Scheme   = new Scheme();
             this.Document = new Document();
-            this.Runtime  = new Runtime();
+            this.Dispatcher  = new Dispatcher();
             this.Highlighter = new Highlighter(ref this.Document, ref this.Buffer);
+
+            this.Dispatcher.Regist(new Runtimes.Javascript(this));
+            this.Dispatcher.Regist(new Runtimes.Ruby(this));
+
+            this.Dispatcher.ImportDirectory(runtime);
+
+            this._OnInit();
 
             this.SetStyle(ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -35,26 +44,31 @@ namespace ToreDitorCore
             this._CaretTimer.Interval = 500;
             this._CaretTimer.Tick += new System.EventHandler(this.OnCaretTimer);
             this._CaretTimer.Enabled = true;
+
+            this._OnLoad();
         }
 
         public Scheme Scheme;
-        public Runtime Runtime;
+        public Dispatcher Dispatcher;
         public Document Document;
         public Buffer Buffer;
         public Highlighter Highlighter;
 
         public void Open(String fname)
         {
-               this._fileSR = new StreamReader(fname, true);
-               this.Document.Set(_fileSR.ReadToEnd());
-               this._fileSR.Close();
+            this._fileSR = new StreamReader(fname, true);
+            this.Document.Set(_fileSR.ReadToEnd());
+            this._fileSR.Close();
 
-               this.Highlighter.RemarkAll();
+            this.Highlighter.RemarkAll();
+
+            this._OnOpen();
         }
 
         public void Save()
         {
             throw new System.NotImplementedException();
+            this._OnSave();
         }
 
         public void ApplyEncoding()
@@ -300,5 +314,33 @@ namespace ToreDitorCore
 
             this.Refresh();
         }
+
+        #region イベント
+        private void _OnInit()
+        {
+            this.Dispatcher.Dispatch(OnEvents.OnInit);
+        }
+
+        private void _OnLoad()
+        {
+            this.Dispatcher.Dispatch(OnEvents.OnLoad);
+        }
+
+        private void _OnFinish()
+        {
+            this.Dispatcher.Dispatch(OnEvents.OnFinish);
+        }
+
+        private void _OnOpen()
+        {
+            this.Dispatcher.Dispatch(OnEvents.OnOpen);
+        }
+
+        private void _OnSave()
+        {
+            this.Dispatcher.Dispatch(OnEvents.OnSave);
+        }
+
+        #endregion
     }
 }

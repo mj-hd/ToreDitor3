@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,11 +17,35 @@ namespace ToreDitorCore
             this._runtimes.Add(runtime);
         }
 
-        public void Dispatch(IEvent e)
+        public void Dispatch(OnEvents e)
         {
-            throw new NotImplementedException();
+            foreach (var runtime in this._runtimes)
+            {
+                runtime.Dispatch(e);
+            }
         }
 
-        private List<IRuntime> _runtimes;
+        public void ImportDirectory(string path)
+        {
+            foreach(var file in Directory.EnumerateFiles(path))
+            {
+                foreach(var runtime in this._runtimes)
+                {
+                    if (runtime.Supports(file))
+                    {
+                        using (var r = new StreamReader(file))
+                        {
+                            runtime.Execute(r.ReadToEnd());
+                        }
+
+                        goto nextFile;
+                    }
+                }
+
+            nextFile:;
+            }
+        }
+
+        private List<IRuntime> _runtimes = new List<IRuntime>();
     }
 }
