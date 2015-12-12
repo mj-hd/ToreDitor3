@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="StatusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <metadata name="TreeImageList.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>115, 17</value>
   </metadata>
@@ -128,7 +125,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAACi
-        DQAAAk1TRnQBSQFMAgEBCAEAARgBAAEIAQABEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
+        DQAAAk1TRnQBSQFMAgEBCAEAARgBAAEYAQABEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
         AwABQAMAATADAAEBAQABCAYAAQwYAAGAAgABgAMAAoABAAGAAwABgAEAAYABAAKAAgADwAEAAcAB3AHA
         AQAB8AHKAaYBAAEzBQABMwEAATMBAAEzAQACMwIAAxYBAAMcAQADIgEAAykBAANVAQADTQEAA0IBAAM5
         AQABgAF8Af8BAAJQAf8BAAGTAQAB1gEAAf8B7AHMAQABxgHWAe8BAAHWAucBAAGQAakBrQIAAf8BMwMA
@@ -160,7 +157,7 @@
         Av8YAAv/AgABHA5LARwIAAH/ApIB/xcAC5ICAAEcAVgMOAFYARwHAAH/AfcB/wFXAfcB/xYAAZIB/wHx
         Af8B8QH/AfEB/wHxAf8BkgIAAfQBUQU4AiMFOAFRAfQGAAH/AfcB/wNXAfcB/wYACJIHAAH3CfEB9wMA
         AZkBWAQ4AQMBKgQ4AVgBBwYAAf8B7wH/BVcB7wYAAfcB/wH2AZ8D/wH3BwAB9wH/AfEB/wHxAf8B8QH/
-        AfEB/wH3AwAB/wFzBDgCMQQ4AXMB/wUAAf8B7wH/BVgB/wHvBgAB9wH1AXkBVwEbAv8B9wcAAe8J8QHv
+        AfEB/wH3AwAB/wFzBDgCMQQ4AXMB/wUAAf8B7wH/BVgB/wHvBgAB9wH/AXkBVwEbAv8B9wcAAe8J8QHv
         BAAB8AFYAzgBIwEpAzgBWAEaBQAB/wHvAf8FWAH/Ae8HAAH3AXkBVwJYAv8B9wcAAe8B/wHxAf8B8QH/
         AfEB/wHxAf8B7wQAAf8BHAFYAjgCDgI4AVgBHAH/BAAB/wHvAf8FeQH/Ae8IAAF4AVgBeQEbAVgBeQH0
         Ae8HAAHvCfEB7wUAAfMBUgH7ATcCAAE4AfsBUgHzBQABBwP/A3kB/wEHCQAB7wIbAfQBmQFYAXkB7wcA
@@ -189,4 +186,10 @@
         AcABAwHAAQMBwAEDCP8L
 </value>
   </data>
+  <metadata name="Label.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Value.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

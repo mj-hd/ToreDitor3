@@ -23,8 +23,8 @@ namespace ToreDitor
 
         private void StrawberryLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            this.StrawberryLink.LinkVisited = true;
-            System.Diagnostics.Process.Start("http://strawberrylab.0am.jp/");
+            this.DevlionLink.LinkVisited = true;
+            System.Diagnostics.Process.Start("http://devlion.net/");
         }
     }
 }

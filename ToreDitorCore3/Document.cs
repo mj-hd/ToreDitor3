@@ -3,47 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace ToreDitorCore
 {
     public class Document
     {
-        private List<StringBuilder> _text;
-        private Dictionary<int, String> _marks;
-
         public Document()
         {
-            this._text  = new List<StringBuilder>();
-            this._marks = new Dictionary<int, String>();
-
-            this._text.Add(new StringBuilder(""));
+            this.Text.Add(new StringBuilder(""));
         }
 
-        public List<StringBuilder> Text
-        {
-            get
-            {
-                return this._text;
-            }
-        }
-
-        public Dictionary<int, String> Marks
-        {
-            get
-            {
-                return this._marks;
-            }
-            set
-            {
-                this._marks = value;
-            }
-        }
+        public List<StringBuilder> Text { get; } = new List<StringBuilder>();
 
         public String FlatText
         {
             get {
                 String text = "";
-                foreach ( StringBuilder line in this._text ) {
+                foreach ( StringBuilder line in this.Text ) {
                     text += line.ToString() + "\n";
                 }
 
@@ -75,7 +53,7 @@ namespace ToreDitorCore
             if (ifRegist) {
 
             }
-            this._text.Add(data);
+            this.Text.Add(data);
         }
 
         public void Input(char data, int rowNum, int posNum) { Input(true, data, rowNum, posNum); }
@@ -84,7 +62,7 @@ namespace ToreDitorCore
             if (ifRegist) {
 
             }
-            this._text[rowNum].Insert(posNum, data);
+            this.Text[rowNum].Insert(posNum, data);
         }
 
         public void Insert(int index, StringBuilder data) { Insert(true, index, data); }
@@ -93,7 +71,7 @@ namespace ToreDitorCore
             if (ifRegist) {
 
             }
-            this._text.Insert(index, data);
+            this.Text.Insert(index, data);
         }
 
         public void Clear() { Clear(true); }
@@ -178,7 +156,7 @@ namespace ToreDitorCore
         public void Set(String source) {
             StringReader sr = new StringReader(source);
 
-            this._text.Clear();
+            this.Text.Clear();
             while (sr.Peek() > -1) {
                 this.Append(new StringBuilder(sr.ReadLine()));
             }

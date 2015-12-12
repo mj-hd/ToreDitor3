@@ -7,33 +7,41 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using HyperTomlProcessor;
+using static System.Math;
 
 namespace ToreDitorCore
 {
     public partial class ToreDitorCore : UserControl
     {
         public ToreDitorCore()
-            : this(SystemFonts.DefaultFont)
+			: this("." + Path.DirectorySeparatorChar)
         {}
-        public ToreDitorCore(Font font)
-            : this(SystemFonts.DefaultFont, "Plugins\\")
-        {}
-        public ToreDitorCore(Font font, string runtime)
+        public ToreDitorCore(string runtime)
         {
             InitializeComponent();
 
-            this.Buffer   = new Buffer(font);
-            this.Scheme   = new Scheme();
-            this.Document = new Document();
-            this.Dispatcher  = new Dispatcher();
-            this.Highlighter = new Highlighter(ref this.Document, ref this.Buffer);
+            this.Buffers.Add(new Buffer());
+            this.CurrentBuffer = this.Buffers[0];
 
-            this.Dispatcher.Regist(new Runtimes.Javascript(this));
-            this.Dispatcher.Regist(new Runtimes.Ruby(this));
+            var dispatcher = Dispatcher.GetInstance();
+            var scheme = Scheme.GetInstance();
 
-            this.Dispatcher.ImportDirectory(runtime);
+            dispatcher.Regist(new Runtimes.TypeScript(this));
+            dispatcher.Regist(new Runtimes.Ruby(this));
 
-            this._OnInit();
+			scheme.Themes.ImportFromDirectory(Path.Combine(runtime, "themes" + Path.DirectorySeparatorChar));
+			dispatcher.ImportDirectory(Path.Combine(runtime, "scripts" + Path.DirectorySeparatorChar));
+
+			if (File.Exists(Path.Combine(runtime, ".tore")))
+            {
+				using (var sr = new StreamReader(Path.Combine(runtime, ".tore")))
+                {
+                    scheme.Static = DynamicToml.Parse(Toml.V04, sr.ReadToEnd());
+                }
+            }
+
+            dispatcher.Dispatch(OnEvents.OnInitProp);
 
             this.SetStyle(ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -45,126 +53,245 @@ namespace ToreDitorCore
             this._CaretTimer.Tick += new System.EventHandler(this.OnCaretTimer);
             this._CaretTimer.Enabled = true;
 
-            this._OnLoad();
+            dispatcher.Dispatch(OnEvents.OnInitApp);
         }
 
-        public Scheme Scheme;
-        public Dispatcher Dispatcher;
-        public Document Document;
-        public Buffer Buffer;
-        public Highlighter Highlighter;
+        public List<Buffer> Buffers = new List<Buffer>();
 
-        public void Open(String fname)
+        protected Buffer _CurrentBuffer;
+        public Buffer CurrentBuffer
         {
-            this._fileSR = new StreamReader(fname, true);
-            this.Document.Set(_fileSR.ReadToEnd());
-            this._fileSR.Close();
+            get
+            {
+                return this._CurrentBuffer;
+            }
+            set
+            {
+                this._CurrentBuffer = value;
 
-            this.Highlighter.RemarkAll();
+                this.Invalidate();
+            }
+        }
 
-            this._OnOpen();
+        public Buffer Create()
+        {
+            var buf = new Buffer();
+
+            this.Buffers.Add(buf);
+
+            this.CurrentBuffer = buf;
+
+            return buf;
+        }
+
+        public Buffer Open(string fname)
+        {
+            var buf = this.Create();
+            buf.Open(fname);
+
+            return buf;
         }
 
         public void Save()
         {
-            throw new System.NotImplementedException();
-            this._OnSave();
+            this.CurrentBuffer.Save();
         }
 
-        public void ApplyEncoding()
+        private int? _numberWidth;
+        protected int _NumberWidth
         {
-            throw new System.NotImplementedException();
+            get
+            {
+                this._numberWidth = this._numberWidth ?? TextRenderer.MeasureText("0000", this.Font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Width;
+                return this._numberWidth.Value;
+            }
         }
 
-        private StreamReader _fileSR;
         private Boolean _IsSystemKeyPressed = false;
         private void _CaretCorrection()
         {
-            if (this.Buffer.Caret.X > this._CurrentLine.Length)
+            if (this.CurrentBuffer.Caret.X > this._CurrentLine.Length)
             {
-                this.Buffer.Caret.X = this._CurrentLine.Length;
+                this.CurrentBuffer.Caret.X = this._CurrentLine.Length;
             }
-            if (this.Buffer.Caret.X < 0)
+            if (this.CurrentBuffer.Caret.X < 0)
             {
-                this.Buffer.Caret.X = this._CurrentLine.Length;
+                this.CurrentBuffer.Caret.X = this._CurrentLine.Length;
             }
-            if (this.Buffer.Caret.Y > this.Document.Text.Count - 1)
+            if (this.CurrentBuffer.Caret.Y > this.CurrentBuffer.Document.Text.Count - 1)
             {
-                this.Buffer.Caret.Y = this.Document.Text.Count - 1;
+                this.CurrentBuffer.Caret.Y = this.CurrentBuffer.Document.Text.Count - 1;
             }
-            if (this.Buffer.Caret.Y < 0)
+            if (this.CurrentBuffer.Caret.Y < 0)
             {
-                this.Buffer.Caret.Y = this.Document.Text.Count - 1;
+                this.CurrentBuffer.Caret.Y = this.CurrentBuffer.Document.Text.Count - 1;
             }
         }
         private StringBuilder _CurrentLine
         {
             get {
-                return this.Document.Text[this.Buffer.Caret.Y];
+                return this.CurrentBuffer.Document.Text[this.CurrentBuffer.Caret.Y];
             }
         }
 
-        #region オーバーライド
+        private float _getTextWidth(Graphics g, string value)
+        {
+            return TextRenderer.MeasureText(g, value, this.Font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding).Width;
+        }
+
+#region オーバーライド
+
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+
+            this.CurrentBuffer.RemarkAll();
+            this.Invalidate();
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            base.OnPaintBackground(e);
+
+            var g = e.Graphics;
+
+            var scheme = Scheme.GetInstance();
+            var currentStyle = scheme.Dynamic.CurrentStyle;
+
+            var maxLine = e.ClipRectangle.Height / this.FontHeight;
+
+            int marginTop = 0;
+            int marginLeft = 0;
+
+            g.FillRectangle(currentStyle["Default"].BackgroundBrush, e.ClipRectangle);
+
+            if (this.CurrentBuffer.IsEnabledNumber) {
+                marginLeft += this._NumberWidth;
+            }
+
+            for (var y = 0; y < Min(this.CurrentBuffer.Tokens.Count, maxLine); y++)
+            {
+                if (y == this.CurrentBuffer.Caret.Y)
+                {
+                    
+                    g.FillRectangle(currentStyle["CursorLine"].BackgroundBrush, new Rectangle(0, marginTop + y * this.FontHeight, e.ClipRectangle.Width, this.FontHeight));
+                }
+
+                int x = 0;
+                foreach (var token in this.CurrentBuffer.Tokens[y])
+                {
+                    var value = token.Value;
+                    var width = (int)this._getTextWidth(g, value);
+                    Brush brush;
+
+                    // ToDo: もっといい方法がある？GetBrush(Styles)とか
+                    if (token.Directive.HasExStyle())
+                    {
+                        var exstyle = token.Directive.Styles[Syntax.Directive.Style.ExStyle];
+
+                        if (exstyle == "Default")
+                        {
+                            brush = Brushes.Transparent;
+                        }
+                        else
+                        {
+                            brush = (token.Directive.ApplyExStyle(currentStyle)).BackgroundBrush;
+                        }
+                    } else
+                    {
+                        brush = token.Directive.BackgroundBrush;
+                    }
+
+                    g.FillRectangle(
+                        brush,
+                        new Rectangle(
+                            marginLeft + TextRenderer.MeasureText(this.CurrentBuffer.Document.Text[y].ToString().Substring(0, x), this.Font).Width,
+                            marginTop + y * this.FontHeight,
+                            width,
+                            this.FontHeight
+                        )
+                    );
+
+                    x += value.Length;
+                }
+            }
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            int count = 0;
+
+            var scheme = Scheme.GetInstance();
+            var currentStyle = scheme.Dynamic.CurrentStyle;
+
+            var maxLine = e.ClipRectangle.Height / this.FontHeight;
+
             int marginTop  = 0;
             int marginLeft = 0;
-            Brush br;
 
-            const float NumberWidth = 30.0f;
-
-            if (this.Buffer.isEnabledNumber) {
-                marginLeft += (int)NumberWidth;
-                g.FillRectangle(this.Buffer.Aliases["defaultNumberBack"].Brush, 0.0f, 0.0f, NumberWidth, (float)this.Height);
+            if (this.CurrentBuffer.IsEnabledNumber) {
+                marginLeft += this._NumberWidth;
+                g.DrawLine(new Pen(currentStyle["LineNumber"].Color), this._NumberWidth-1, 0, this._NumberWidth-1, e.ClipRectangle.Bottom);
             }
 
-            foreach (var line in this.Document.Text.Select((val, i) => new { i, val }))
+            for (var y = 0; y < Min(this.CurrentBuffer.Tokens.Count, maxLine); y++)
         	{
+      	        if (this.CurrentBuffer.IsEnabledNumber) {
+                    var number = (y+1).ToString();
 
-      	        if (this.Buffer.isEnabledNumber) {
-                    var number = (line.i+1).ToString();
-
-   	                g.DrawString(
+                    var width = (int)this._getTextWidth(g, number);
+                    TextRenderer.DrawText(
+                        g,
                         number,
-                        this.Buffer.Font,
-                        this.Buffer.Aliases["defaultNumber"].Brush,
-                        NumberWidth - (float)number.Length*this.Buffer.FontSize.Width - 2.0f,
-                        (float)line.i *this.Buffer.FontSize.Height
+                        this.Font,
+                        new Point(
+                            this._NumberWidth - width - 2,
+                            y *this.FontHeight
+                        ),
+                        currentStyle["LineNumber"].Color,
+                        TextFormatFlags.NoPadding
                     );
-   	            }
+                }
 
-        	    for (int x = 0; x < line.val.Length; x++ ) //文字の描画
-        	    {
-        	        String markName = "";
-        	        this.Document.Marks.TryGetValue(count, out markName);
-        	        if (markName != null) {
-        	            br = this.Buffer.Aliases[markName].Brush;
-        	        } else {
-        	            br = this.Buffer.Aliases["default"].Brush;    
-        	        }
-        	        g.DrawString(line.val[x].ToString(),
-        	            this.Buffer.Font,
-        	            br,
-        	            new PointF(
-        	                (float)marginLeft + (float)x * this.Buffer.FontSize.Width,
-        	                (float)marginTop  + (float)line.i * this.Buffer.FontSize.Height
-        	            )
-        	        );
+                int x = 0;
+                foreach (var token in this.CurrentBuffer.Tokens[y])
+                {
+                    var value = token.Value;
 
-        	        count++;
-        	    }
-        	    count++;
+                    var font = new Font(this.Font, token.Directive.FontStyle);
+
+                    var color = (token.Directive.ApplyExStyle(currentStyle)).Color;
+
+                    var offset = (int)this._getTextWidth(g, this.CurrentBuffer.Document.Text[y].ToString().Substring(0, x));
+                    TextRenderer.DrawText(
+                        g,
+                        value,
+                        font,
+                        new Point(
+                            marginLeft + offset,
+                            marginTop + y*this.FontHeight
+                        ),
+                        color,
+                        TextFormatFlags.NoPadding
+                    );
+
+                    /*g.DrawRectangle(
+                        new Pen(token.Directive.Color),
+                        marginLeft + offset,
+                        marginTop + y * this.FontHeight,
+                        TextRenderer.MeasureText(value, this.Font).Width,
+                        this.FontHeight
+                    );*/
+
+                    x += value.Length;
+                }
         	}
 
             //キャレットの描画
-            
-            if (this.Buffer.Caret.Visible) {
-                int cx = marginLeft + this.Buffer.Caret.X * this.Buffer.FontSize.Width;
-                int cy = marginTop  + this.Buffer.Caret.Y * this.Buffer.FontSize.Height;
-                g.DrawLine(new Pen(this.Buffer.Aliases["defaultCaret"].Brush), new Point(cx, cy), new Point(cx, cy+this.Buffer.FontSize.Height));
+            if (this.CurrentBuffer.Caret.Visible) {
+                int cx = marginLeft + (int)this._getTextWidth(g, this.CurrentBuffer.Document.Text[this.CurrentBuffer.Caret.Y].ToString().Substring(0, this.CurrentBuffer.Caret.X));
+                int cy = marginTop  + this.CurrentBuffer.Caret.Y * this.FontHeight;
+                g.DrawLine(new Pen(currentStyle["Cursor"].Color), new Point(cx, cy), new Point(cx, cy+this.FontHeight));
             }
 
             base.OnPaint(e);
@@ -176,13 +303,23 @@ namespace ToreDitorCore
             base.OnValidated(e);
         }
 
+        protected override bool IsInputKey(Keys keyData)
+        {
+            if ((keyData & (Keys.Up | Keys.Right | Keys.Down | Keys.Left | Keys.Back | Keys.Delete | Keys.Enter)) != 0)
+            {
+                return true;
+            }
+
+            return base.IsInputKey(keyData);
+        }
+
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
             if (!this._IsSystemKeyPressed) {
-                this.Document.Input(e.KeyChar, this.Buffer.Caret.X, this.Buffer.Caret.Y);
-                this.Buffer.Caret.X++;
+                this.CurrentBuffer.Document.Input(e.KeyChar, this.CurrentBuffer.Caret.X, this.CurrentBuffer.Caret.Y);
+                this.CurrentBuffer.Caret.X++;
 
-                this.Highlighter.RemarkAll();
+                this.CurrentBuffer.RemarkAll();
                 this.Refresh();
             }
         }
@@ -193,13 +330,13 @@ namespace ToreDitorCore
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    if (this.Buffer.Caret.Y == 0)
+                    if (this.CurrentBuffer.Caret.Y == 0)
                     {
                         //this.Beep();
                     }
                     else
                     {
-                        this.Buffer.Caret.Y--;
+                        this.CurrentBuffer.Caret.Y--;
                         this._CaretCorrection();
 
                     }
@@ -207,26 +344,26 @@ namespace ToreDitorCore
 
                     break;
                 case Keys.Right:
-                    if (this.Buffer.Caret.X == this._CurrentLine.Length)
+                    if (this.CurrentBuffer.Caret.X == this._CurrentLine.Length)
                     {
                         //this.Beep();
                     }
                     else
                     {
-                        this.Buffer.Caret.X++;
+                        this.CurrentBuffer.Caret.X++;
 
                     }
 
 
                     break;
                 case Keys.Down:
-                    if (this.Buffer.Caret.Y == this.Document.Text.Count-1)
+                    if (this.CurrentBuffer.Caret.Y == this.CurrentBuffer.Document.Text.Count-1)
                     {
                         //this.Beep();
                     }
                     else
                     {
-                        this.Buffer.Caret.Y++;
+                        this.CurrentBuffer.Caret.Y++;
                         this._CaretCorrection();
 
                     }
@@ -234,38 +371,38 @@ namespace ToreDitorCore
 
                     break;
                 case Keys.Left:
-                    if (this.Buffer.Caret.X == 0)
+                    if (this.CurrentBuffer.Caret.X == 0)
                     {
                         //this.Beep();
                     }
                     else
                     {
-                        this.Buffer.Caret.X--;
+                        this.CurrentBuffer.Caret.X--;
 
                     }
 
 
                     break;
                 case Keys.Back:
-                    if (!((this.Buffer.Caret.X == 0) && (this.Buffer.Caret.Y == 0)))
+                    if (!((this.CurrentBuffer.Caret.X == 0) && (this.CurrentBuffer.Caret.Y == 0)))
                     {
                         int tmpBeforeLength;
-                        if (this.Buffer.Caret.Y != 0) {
-                            tmpBeforeLength = this.Document.Text[this.Buffer.Caret.Y -1].Length;
+                        if (this.CurrentBuffer.Caret.Y != 0) {
+                            tmpBeforeLength = this.CurrentBuffer.Document.Text[this.CurrentBuffer.Caret.Y -1].Length;
                         } else {
                             tmpBeforeLength = 0;
                         }
 
-                        this.Document.Delete(this.Buffer.Caret.X - 1, this.Buffer.Caret.Y, this.Buffer.Caret.X, this.Buffer.Caret.Y);
+                        this.CurrentBuffer.Document.Delete(this.CurrentBuffer.Caret.X - 1, this.CurrentBuffer.Caret.Y, this.CurrentBuffer.Caret.X, this.CurrentBuffer.Caret.Y);
                         
-                        if (this.Buffer.Caret.X == 0)
+                        if (this.CurrentBuffer.Caret.X == 0)
                         {
-                            this.Buffer.Caret.Y--;
-                            this.Buffer.Caret.X = tmpBeforeLength;
+                            this.CurrentBuffer.Caret.Y--;
+                            this.CurrentBuffer.Caret.X = tmpBeforeLength;
                         }
                         else
                         {
-                            this.Buffer.Caret.X--;
+                            this.CurrentBuffer.Caret.X--;
                         }
 
                     }
@@ -276,14 +413,14 @@ namespace ToreDitorCore
                     break;
                 case Keys.Enter:
 
-                    if (this.Buffer.Caret.X == this._CurrentLine.Length) {
-                        this.Document.Insert(this.Buffer.Caret.Y+1, new StringBuilder(""));
+                    if (this.CurrentBuffer.Caret.X == this._CurrentLine.Length) {
+                        this.CurrentBuffer.Document.Insert(this.CurrentBuffer.Caret.Y+1, new StringBuilder(""));
                     } else {
-                        this.Document.Insert(this.Buffer.Caret.Y +1, new StringBuilder(this._CurrentLine.ToString().Substring(this.Buffer.Caret.X)));
-                        this.Document.Delete(this.Buffer.Caret.X, this.Buffer.Caret.Y, this._CurrentLine.Length, this.Buffer.Caret.Y);
+                        this.CurrentBuffer.Document.Insert(this.CurrentBuffer.Caret.Y +1, new StringBuilder(this._CurrentLine.ToString().Substring(this.CurrentBuffer.Caret.X)));
+                        this.CurrentBuffer.Document.Delete(this.CurrentBuffer.Caret.X, this.CurrentBuffer.Caret.Y, this._CurrentLine.Length, this.CurrentBuffer.Caret.Y);
                     }
-                    this.Buffer.Caret.Y++;
-                    this.Buffer.Caret.X = 0;
+                    this.CurrentBuffer.Caret.Y++;
+                    this.CurrentBuffer.Caret.X = 0;
                     break;
                 default:
                     this._IsSystemKeyPressed = false;
@@ -291,56 +428,33 @@ namespace ToreDitorCore
                     break;
             }
 
-            this.Buffer.Caret.Visible = true;
-            this.Highlighter.RemarkAll();
+            this.CurrentBuffer.Caret.Visible = true;
+
+            Dispatcher.GetInstance().Dispatch(OnEvents.OnKeyPress);
+
+            this.CurrentBuffer.RemarkAll();
             this.Refresh();
         }
 
-        #endregion
+#endregion
 
         private Timer _CaretTimer;
         protected void OnCaretTimer(object sender, EventArgs e)
         {
             if (true)
             {
-                this.Buffer.Caret.Visible ^= true;
+                this.CurrentBuffer.Caret.Visible ^= true;
             }
             int marginLeft = 0;
             int marginTop  = 0;
 
-            if (this.Buffer.isEnabledNumber) {
-                marginLeft += 40;
+            if (this.CurrentBuffer.IsEnabledNumber) {
+                marginLeft += this._NumberWidth;
             }
+
+            Dispatcher.GetInstance().Dispatch(OnEvents.OnTimer);
 
             this.Refresh();
         }
-
-        #region イベント
-        private void _OnInit()
-        {
-            this.Dispatcher.Dispatch(OnEvents.OnInit);
-        }
-
-        private void _OnLoad()
-        {
-            this.Dispatcher.Dispatch(OnEvents.OnLoad);
-        }
-
-        private void _OnFinish()
-        {
-            this.Dispatcher.Dispatch(OnEvents.OnFinish);
-        }
-
-        private void _OnOpen()
-        {
-            this.Dispatcher.Dispatch(OnEvents.OnOpen);
-        }
-
-        private void _OnSave()
-        {
-            this.Dispatcher.Dispatch(OnEvents.OnSave);
-        }
-
-        #endregion
     }
 }

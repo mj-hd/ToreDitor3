@@ -9,6 +9,13 @@ namespace ToreDitorCore
 {
     public class Dispatcher
     {
+        private static Dispatcher _instance = null;
+        public static Dispatcher GetInstance()
+        {
+            _instance = _instance ?? new Dispatcher();
+            return _instance;
+        }
+
         public Dispatcher()
         {
         }
@@ -25,24 +32,51 @@ namespace ToreDitorCore
             }
         }
 
-        public void ImportDirectory(string path)
+        public void ImportFile(string file)
         {
-            foreach(var file in Directory.EnumerateFiles(path))
+            if (!File.Exists(file))
             {
-                foreach(var runtime in this._runtimes)
+                throw new FileNotFoundException($"ファイル{file}が見つかりませんでした。");
+            }
+
+            foreach(var runtime in this._runtimes)
+            {
+                if (runtime.Supports(file))
                 {
-                    if (runtime.Supports(file))
-                    {
+                    try {
                         using (var r = new StreamReader(file))
                         {
                             runtime.Execute(r.ReadToEnd());
                         }
-
-                        goto nextFile;
                     }
-                }
+                    catch (NiL.JS.Core.JSException e)
+                    {
+                        System.Windows.Forms.MessageBox.Show($"Error {file}\n" + e.Message, "エラー");
+                    }
+                    catch (ArgumentException e)
+                    {
+                        System.Windows.Forms.MessageBox.Show($"Error {file}\n"+e.Message, "エラー");
+                    }
+                    catch (Exception e)
+                    {
+                        System.Windows.Forms.MessageBox.Show($"Error {file}\n"+e.Message, "エラー");
+                    }
 
-            nextFile:;
+                    return;
+                }
+            }
+        }
+
+        public void ImportDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
+
+            foreach(var file in Directory.EnumerateFiles(path))
+            {
+                this.ImportFile(file);
             }
         }
 

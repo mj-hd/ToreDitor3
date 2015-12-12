@@ -23,31 +23,21 @@ namespace ToreDitor
             Debug();
         }
 
-        private List<ToreDitorCore.ToreDitorCore> _Editors = new List<ToreDitorCore.ToreDitorCore>();
-
-        private int AddEditTab(string name)
+        private TabPage AddEditTab(string name)
         {
-            TabPage tb = new TabPage();
-            tb.Text = name;
-            tb.Tag  = this.TabControl.TabPages.Count;
+            var page = new TabPage(name);
+            this.TabControl.TabPages.Add(page);
 
-            ToreDitorCore.ToreDitorCore tc = new ToreDitorCore.ToreDitorCore(new Font("MS Gothic", 11.0f));
-            tc.Dock = DockStyle.Fill;
-            tc.Name = "Editor";
+            page.Tag = this.Editor.Create();
 
-            this._Editors.Add(tc);
-            tb.Controls.Add(tc);
-            this.TabControl.TabPages.Add(tb);
-
-            return this.TabControl.TabPages.Count -1;
+            return page;
         }
 
         private void Debug()
         {
-            int tabNum = this.AddEditTab("Debug");
-            ToreDitorCore.ToreDitorCore tc = (ToreDitorCore.ToreDitorCore)this.TabControl.TabPages[tabNum].Controls["Editor"];
-            tc.Document.Insert(0, new StringBuilder("Hello, World!!"));
-            tc.Buffer.Aliases.Add(new ToreDitorCore.Highlight("DebugHello", @"Hello", new SolidBrush(ColorTranslator.FromHtml("#181")), 1));
+            var debugBuf = this.AddEditTab("Debug").Tag as ToreDitorCore.Buffer;
+            debugBuf.Document.Append(new StringBuilder("Hello, World!!"));
+            debugBuf.SetFileType("hsp");
         }
 
         private void バージョン情報AboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -74,28 +64,9 @@ namespace ToreDitor
 
         private void 開くOpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*DialogResult dr = this.openFileDialog.ShowDialog();
-
-            if (dr == DialogResult.OK) {
-                int tabNum = this.AddEditTab(Path.GetFileName(this.openFileDialog.FileName));
-                this.TabControl.TabPages[tabNum].Tag = this.openFileDialog.FileName;
-                ToreDitorCore.ToreDitorCore editor = (ToreDitorCore.ToreDitorCore)this.TabControl.TabPages[tabNum].Controls["Editor"];
-                editor.Load(this.openFileDialog.FileName);
-
-                this.TabControl.SelectedTab = this.TabControl.TabPages[tabNum];
-            }*/
-
             if (this.openFileDialog.ShowDialog() == DialogResult.OK) {
-                int tabNum = this.AddEditTab(Path.GetFileName(this.openFileDialog.FileName));
-                this.TabControl.TabPages[tabNum].Tag = this.openFileDialog.FileName; 
-                this._Editors[tabNum].Open(this.openFileDialog.FileName);
-
-                if (this.openFileDialog.FileName.EndsWith(".cs")) {
-                    this._Editors[tabNum].Buffer.Aliases.Add(new ToreDitorCore.Highlight("CSKeyword", "(using)|(namespace)|(public)|(partial)|(class)|(this)", new SolidBrush(ColorTranslator.FromHtml("#99d"))));
-                    this._Editors[tabNum].Buffer.Aliases.Add(new ToreDitorCore.Highlight("CSClassName", "(ToreDitorCore)|(UserControl)", new SolidBrush(ColorTranslator.FromHtml("#9d9"))));
-                }
-
-                this.TabControl.SelectedTab = this.TabControl.TabPages[tabNum];
+                this.TabControl.SelectedTab = this.AddEditTab(Path.GetFileName(this.openFileDialog.FileName));
+                (this.TabControl.SelectedTab.Tag as ToreDitorCore.Buffer).Open(this.openFileDialog.FileName);
             }
  
         }
@@ -119,7 +90,7 @@ namespace ToreDitor
         {
             this._NonameCount++;
 
-            this.TabControl.SelectedTab = this.TabControl.TabPages[this.AddEditTab("名称未設定"+this._NonameCount.ToString())];
+            this.TabControl.SelectedTab = this.AddEditTab("名称未設定"+this._NonameCount.ToString());
         }
 
         private void 設定OptionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -165,5 +136,14 @@ namespace ToreDitor
                 this.名前をつけて保存SaveAsToolStripMenuItem_Click(sender, e);
             }*/
         }
-   }
+
+        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.Editor.CurrentBuffer = this.TabControl.SelectedTab.Tag as ToreDitorCore.Buffer;
+        }
+
+        private void Editor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+        }
+    }
 }

@@ -8,10 +8,62 @@ namespace ToreDitorCore
 {
     public enum OnEvents
     {
-        OnInit,
+        Unknown = -1,
+        OnInitProp,
+        OnInitApp,
+        OnCreate,
         OnLoad,
-        OnFinish,
-        OnOpen,
-        OnSave
+        OnSaving,
+        OnSave,
+        OnDestroy,
+        OnTimer,
+        OnEvaluate,
+        OnFindRequest,
+        OnReplaceRequest,
+        OnKeyPrintable,
+        OnMultiStroke,
+        OnComposition,
+        OnQuitApp,
+        OnMenuRequest,
+        OnKeyCompleteRequest,
+        OnKeyCompletion,
+        OnMouseClick,
+        OnKeyPress
+    }
+
+    static class OnEventsExt
+    {
+        public static string ToString(OnEvents e)
+        {
+            return OnEventsExt._eventNames[(int)e];
+        }
+        
+        public static OnEvents ToOnEvents(string e)
+        {
+            return (OnEvents)Array.IndexOf(OnEventsExt._eventNames, e);
+        }
+
+        private static string[] _eventNames = {
+           "onInitProp",
+     	   "onInitApp",
+     	   "onCreate",
+     	   "onLoad",
+     	   "onSaving",
+     	   "onSave",
+     	   "onDestroy",
+     	   "onTimer",
+     	   "onEvaluate",
+     	   "onFindRequest",
+     	   "onReplaceRequest",
+     	   "onKeyPrintable",
+     	   "onMultiStroke",
+     	   "onComposition",
+     	   "onQuitApp",
+     	   "onMenuRequest",
+     	   "onKeyCompleteRequest",
+     	   "onKeyCompletion",
+     	   "onMouseClick",
+     	   "onKeyPress"
+        };
     }
 }

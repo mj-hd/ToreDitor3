@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
             this.IconBox = new System.Windows.Forms.PictureBox();
             this.VersionLabel = new System.Windows.Forms.Label();
-            this.StrawberryLink = new System.Windows.Forms.LinkLabel();
+            this.DevlionLink = new System.Windows.Forms.LinkLabel();
             this.InfomationGroup = new System.Windows.Forms.GroupBox();
             this.CreditLabel = new System.Windows.Forms.Label();
             this.DayLabel = new System.Windows.Forms.Label();
@@ -60,16 +60,16 @@
             this.VersionLabel.TabIndex = 2;
             this.VersionLabel.Text = "Version 0.00a";
             // 
-            // StrawberryLink
+            // DevlionLink
             // 
-            this.StrawberryLink.AutoSize = true;
-            this.StrawberryLink.Location = new System.Drawing.Point(109, 82);
-            this.StrawberryLink.Name = "StrawberryLink";
-            this.StrawberryLink.Size = new System.Drawing.Size(81, 12);
-            this.StrawberryLink.TabIndex = 3;
-            this.StrawberryLink.TabStop = true;
-            this.StrawberryLink.Text = "Strawberry lab.";
-            this.StrawberryLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.StrawberryLink_LinkClicked);
+            this.DevlionLink.AutoSize = true;
+            this.DevlionLink.Location = new System.Drawing.Point(109, 82);
+            this.DevlionLink.Name = "DevlionLink";
+            this.DevlionLink.Size = new System.Drawing.Size(61, 12);
+            this.DevlionLink.TabIndex = 3;
+            this.DevlionLink.TabStop = true;
+            this.DevlionLink.Text = "Devlion.net";
+            this.DevlionLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.StrawberryLink_LinkClicked);
             // 
             // InfomationGroup
             // 
@@ -87,11 +87,11 @@
             // 
             this.CreditLabel.AutoSize = true;
             this.CreditLabel.Font = new System.Drawing.Font("MS UI Gothic", 8F);
-            this.CreditLabel.Location = new System.Drawing.Point(6, 48);
+            this.CreditLabel.Location = new System.Drawing.Point(27, 48);
             this.CreditLabel.Name = "CreditLabel";
-            this.CreditLabel.Size = new System.Drawing.Size(111, 11);
+            this.CreditLabel.Size = new System.Drawing.Size(90, 11);
             this.CreditLabel.TabIndex = 4;
-            this.CreditLabel.Text = "Composed by wait0000";
+            this.CreditLabel.Text = "Composed by mjhd";
             // 
             // DayLabel
             // 
@@ -110,7 +110,7 @@
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(91, 23);
             this.CloseButton.TabIndex = 5;
-            this.CloseButton.Text = "閉じる(&Close)";
+            this.CloseButton.Text = "閉じる(&C)";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
@@ -122,7 +122,7 @@
             this.ClientSize = new System.Drawing.Size(196, 98);
             this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.InfomationGroup);
-            this.Controls.Add(this.StrawberryLink);
+            this.Controls.Add(this.DevlionLink);
             this.Controls.Add(this.IconBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -146,7 +146,7 @@
 
         private System.Windows.Forms.PictureBox IconBox;
         private System.Windows.Forms.Label VersionLabel;
-        private System.Windows.Forms.LinkLabel StrawberryLink;
+        private System.Windows.Forms.LinkLabel DevlionLink;
         private System.Windows.Forms.GroupBox InfomationGroup;
         private System.Windows.Forms.Label CreditLabel;
         private System.Windows.Forms.Label DayLabel;

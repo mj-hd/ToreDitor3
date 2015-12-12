@@ -61,70 +61,105 @@ namespace ToreDitorCore.Properties {
         }
         
         /// <summary>
-        ///   var Editor = {
-        ///    Buffer : {
-        ///        Caret: {},
-        ///        Highlights: {}
-        ///    },
-        ///    Dispatcher : {
-        ///        Dispatch: function(e) {
-        ///            var funcs = eval(&quot;Editor.&quot;+e)
-        ///            for (var i = 0; i &lt; funcs.length; i++) {
-        ///                funcs[i]();
-        ///            }
-        ///        }
-        ///    },
-        ///    Document   : {},
-        ///    Scheme     : {},
-        ///    OnInit     : [],
-        ///    OnFinish   : [],
-        ///    OnLoad     : [],
-        ///    OnOpen     : [],
-        ///    OnSave     : []
-        ///};
+        ///   $_host = _host
         ///
-        ///Editor.Buffer.Highlights = {
-        ///    Add: function (highlig [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string JavascriptRuntimeScript {
-            get {
-                return ResourceManager.GetString("JavascriptRuntimeScript", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   class EventHandlerArray &lt; Array
-        ///  def add_handler(code=nil, &amp;block)
-        ///    if(code)
-        ///      push(code)
-        ///    else
-        ///      push(block)
-        ///    end
-        ///  end
-        ///  def add
-        ///    raise &quot;error&quot;
-        ///  end
-        ///  def remove_handler(code)
-        ///    delete(code)
-        ///  end
-        ///  def trigger(e)
-        ///    reverse_each { | handler | handler.call(e) }
-        ///  end
+        ///class Event
+        ///	attr_writer :handled
+        ///	def initialize(sender)
+        ///		@sender = @sender
+        ///		@handled = false
+        ///	end
+        ///	def handled?; @handled; end
         ///end
         ///
-        ///def events(*symbols)
-        ///  modName = name+&quot;Events&quot;
-        ///  initStr = Array.new
-        ///  readerStr = Array.new
-        ///  methodsStr = Array.new
-        ///  symbols.each { | sym |
-        ///    name = sym.to_s
-        ///    initStr &lt;&lt; %Q{
-        ///    [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///class EventHandlerArray &lt; Array
+        ///	def add_handler(code=nil, &amp;block)
+        ///		if(code)
+        ///			push(code)
+        ///		else
+        ///			push(block)
+        ///		end
+        ///	end
+        ///	def add
+        ///		raise &quot;error&quot;
+        ///	end
+        ///	def remove_handler(code)
+        ///		delete(code)
+        ///	end
+        ///	def dispatch(e)
+        ///		reverse_each { | handler | handler.call(e) }
+        ///	end
+        ///end
+        ///
+        ///class Class
+        ///	def events(*symbols)
+        ///		modName = name+&quot;E [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string RubyRuntimeScript {
             get {
                 return ResourceManager.GetString("RubyRuntimeScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   var ts;
+        ///(function (ts) {
+        ///    // token &gt; SyntaxKind.Identifer =&gt; token is a keyword
+        ///    // Also, If you add a new SyntaxKind be sure to keep the `Markers` section at the bottom in sync
+        ///    (function (SyntaxKind) {
+        ///        SyntaxKind[SyntaxKind[&quot;Unknown&quot;] = 0] = &quot;Unknown&quot;;
+        ///        SyntaxKind[SyntaxKind[&quot;EndOfFileToken&quot;] = 1] = &quot;EndOfFileToken&quot;;
+        ///        SyntaxKind[SyntaxKind[&quot;SingleLineCommentTrivia&quot;] = 2] = &quot;SingleLineCommentTrivia&quot;;
+        ///        SyntaxKind[SyntaxKind[&quot;MultiLineCommentTrivia&quot;] = 3] = &quot;MultiLineCom [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string typescript {
+            get {
+                return ResourceManager.GetString("typescript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   class Buffer {
+        ///	caret: Caret = new Caret();
+        ///	highlights: Highlights = new Highlights();
+        ///}
+        ///
+        ///class Caret {
+        ///}
+        ///
+        ///class Document {
+        ///}
+        ///
+        ///class Highlight {
+        ///	name: string;
+        ///	pattern: string;
+        ///	brush: string;
+        ///	level: number;
+        ///}
+        ///
+        ///class Highlights {
+        ///	add(highlight: Highlight) {
+        ///		
+        ///	}
+        ///}
+        ///
+        ///class Highlighter {
+        ///	remark_all() {
+        ///	
+        ///	}
+        ///}
+        ///
+        ///class Editor {
+        ///	buffer: Buffer = new Buffer();
+        ///	document: Document = new Document();
+        ///	scheme: Scheme = new Scheme();
+        ///
+        ///	onInitProp: {(): void;}[] = [];
+        ///	onInitApp [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string TypeScriptRuntimeScript {
+            get {
+                return ResourceManager.GetString("TypeScriptRuntimeScript", resourceCulture);
             }
         }
     }

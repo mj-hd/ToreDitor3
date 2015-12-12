@@ -39,31 +39,7 @@ namespace ToreDitorCore.Runtimes
 
         public void Dispatch(OnEvents e)
         {
-            var name = "";
-
-            switch (e)
-            {
-                case OnEvents.OnFinish:
-                    name = "onFinish";
-                    break;
-                case OnEvents.OnInit:
-                    name = "onInit";
-                    break;
-                case OnEvents.OnLoad:
-                    name = "onLoad";
-                    break;
-                case OnEvents.OnOpen:
-                    name = "onOpen";
-                    break;
-                case OnEvents.OnSave:
-                    name = "onSave";
-                    break;
-                default:
-                    name = "";
-                    return;
-            }
-
-            this._engine.Execute($"$editor.dispatch_{name}(Event.new(self))", this._scope);
+            this._engine.Execute($"$editor.dispatch_{OnEventsExt.ToString(e)}(Event.new(self))", this._scope);
         }
 
         public void Execute(string source)
@@ -81,6 +57,8 @@ namespace ToreDitorCore.Runtimes
             this._scope = this._engine.CreateScope();
 
             this._scope.SetVariable("_host", this._host);
+            this._scope.SetVariable("_scheme", Scheme.GetInstance());
+            this._scope.SetVariable("_dispatcher", Dispatcher.GetInstance());
 
             this._engine.Execute(Properties.Resources.RubyRuntimeScript, this._scope);
         }

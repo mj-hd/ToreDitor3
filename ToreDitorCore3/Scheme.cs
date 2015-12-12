@@ -3,35 +3,59 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using HyperTomlProcessor;
 
 namespace ToreDitorCore
 {
-    [SerializableAttribute]
     public class Scheme
     {
-        private DataTable DataTable;
+        private static Scheme _instance = null;
+        public static Scheme GetInstance() {
+            _instance = _instance ?? new Scheme();
+            return _instance;
+        }
 
         public Scheme()
         {
-            this.DataTable = new DataTable("Static");
-            this.DataTable.Columns.Add("path");
-            this.DataTable.Columns.Add("name");
-            this.DataTable.Columns.Add("data");
+            this.Static = DynamicToml.CreateTable();
         }
 
-        public void Regist(string path, string name, string data)
-        {
-            DataRow row = this.DataTable.NewRow();
-            row["path"] = path;
-            row["name"] = name;
-            row["data"] = data;
-            this.DataTable.Rows.Add(row);
-        }
+        public Schemes.Dynamic Dynamic = new Schemes.Dynamic();
 
-        public void Update(string path, string name, string data)
+        private dynamic _static;
+        public dynamic Static
         {
-            DataRow[] rows = this.DataTable.Select("path = " + path + " and name = " + name);
-            rows[0]["data"] = data;
+            get
+            {
+                return this._static;
+            }
+            set
+            {
+                this._static = value;
+
+                if (this._static.IsDefined("appearance"))
+                {
+                    if (this._static.appearance.IsDefined("theme"))
+                    {
+                        this.Dynamic.CurrentTheme = this.Themes[this._static.appearance.theme];
+
+                        if (this._static.appearance.IsDefined("theme-side")) {
+                            this.Dynamic.CurrentStyle = this.Dynamic.CurrentTheme.Style[
+                                Schemes.Theme.ThemeSide.FromString(this._static.appearance["theme-side"])
+                            ];
+                        } else
+                        {
+                            this.Dynamic.CurrentStyle = this.Dynamic.CurrentTheme.Style[Schemes.Theme.ThemeSide.Light];
+                        }
+
+                        return;
+                    }
+                }
+
+                this.Dynamic.CurrentTheme = new Schemes.Theme();
+                this.Dynamic.CurrentStyle = this.Dynamic.CurrentTheme.Style[Schemes.Theme.ThemeSide.Light];
+            }
         }
+        public Schemes.Themes Themes = new Schemes.Themes();
     }
 }
